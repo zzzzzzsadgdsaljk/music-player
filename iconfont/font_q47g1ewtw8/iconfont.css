@@ -1,0 +1,25 @@
+@font-face {
+  font-family: "iconfont"; /* Project id  */
+  src: url('iconfont.ttf?t=1651061758581') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-bofangqi:before {
+  content: "\e640";
+}
+
+.icon-bofang1:before {
+  content: "\e515";
+}
+
+.icon-bofangqi1:before {
+  content: "\e627";
+}
+

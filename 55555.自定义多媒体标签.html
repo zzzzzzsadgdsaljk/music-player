@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./iconfont/font_s0j87378pz/iconfont.css">
+
+    <style>
+        .icon {
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.15em;
+            fill: currentColor;
+            overflow: hidden;
+        }
+
+        .media {
+            width: 800px;
+            height: 50px;
+            border: 3px solid #bbb;
+            margin: 300px auto;
+        }
+
+        .media>div {
+            float: left;
+            line-height: 50px;
+            margin: 0 10px;
+        }
+
+        .media>div.playRange {
+            width: 200px;
+            height: 6px;
+            background-color: #333;
+            margin: 22px 10px;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .media>div.playRange .currentRange {
+            width: 0;
+            height: 6px;
+            background-color: rgb(9, 143, 153);
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .media>div.playRange .playBtn {
+            width: 20px;
+            height: 20px;
+            background-color: rgb(9, 143, 153);
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            top: -7px;
+            pointer-events: none;
+            /* 鼠标点击事件穿透 */
+        }
+
+
+        .media .volume {
+            position: relative;
+        }
+
+        .media .volumeRange {
+            width: 6px;
+            height: 100px;
+            background-color: #333;
+            border-radius: 2px;
+            position: absolute;
+            top: -100px;
+            left: 4px;
+            display: none;
+        }
+
+        .media .volumeRange .currentVolume {
+            width: 6px;
+            height: 50px;
+            background-color: blue;
+            border-radius: 2px;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            pointer-events: none;
+            /* 鼠标点击事件穿透 */
+        }
+
+        .media .volumeRange .volumeBtn {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: blue;
+            position: absolute;
+            left: -5px;
+            bottom: 40px;
+            pointer-events: none;
+            /* 鼠标点击事件穿透 */
+        }
+
+        .media i {
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio src="./周杰伦 - 一路向北.mp3"></audio>
+    <div class="media">
+        <!-- 播放图标 -->
+        <div class="playOrPause">
+            <svg class="icon" aria-hidden="true">
+                <!-- <i class="iconfont icon-bofangqi"></i> -->
+                <use xlink:href="#icon-bofangqi1"></use>
+            </svg>
+        </div>
+        <!-- 时间显示 -->
+        <div class="time">
+            <span class="currentMinute">00</span>
+            :
+            <span class="currentSecond">00</span>
+            /
+            <span class="durationMinute">00</span>
+            :
+            <span class="durationSecond">00</span>
+        </div>
+        <!-- 进度条 -->
+        <div class="playRange">
+            <div class="currentRange"></div>
+            <div class="playBtn"></div>
+        </div>
+        <!-- 喇叭 -->
+        <div class="volume">
+            <!-- 声音的进度条 -->
+            <div class="volumeRange">
+                <div class="currentVolume"></div>
+                <div class="volumeBtn"></div>
+            </div>
+            <!-- 声音的图标 -->
+            <!--  <i class="iconfont icon-volume"></i> -->
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-shengyin"></use>
+            </svg>
+        </div>
+    </div>
+</body>
+
+</html>
+<script src="./iconfont/font_q47g1ewtw8/iconfont.js"></script>
+<script src="./iconfont/font_s0j87378pz/iconfont.js"></script>
+<script src="./js/jquery.js"></script>
+<script>
+    /* 音乐播放器jq对象集合 */
+    let audio = $('audio')[0];
+    /* 声音控制的进度条show() 和 hide() */
+    $('.volume').hover(function () {
+        $(this).find('.volumeRange').css('display', 'block');
+    }, function () {
+        $(this).find('.volumeRange').hide();
+    })
+    /* 点击开关播放 */
+    $('.playOrPause').click(function () {
+        if ($(this).find('use').attr('xlink:href') == '#icon-bofangqi1') {
+            $(this).find('use').attr('xlink:href', '#icon-weibiaoti--');
+            audio.play();
+        } else {
+            audio.pause();
+            $(this).find('use').attr('xlink:href', '#icon-bofangqi1');
+        }
+    })
+    //渲染时长
+    audio.addEventListener('canplay', function () {
+        let ctMin = parseInt(audio.duration / 60);
+        let ctSec = parseInt(audio.duration % 60);
+        $('.durationMinute').text(ctMin < 10 ? '0' + ctMin : ctMin);
+        $('.durationSecond').text(ctSec < 10 ? '0' + ctSec : ctSec);
+    })
+    // 播放时间设置
+    audio.ontimeupdate = function () {
+        // console.log(audio.currentTime);
+        let ctMin = parseInt(audio.currentTime / 60);
+        let ctSec = parseInt(audio.currentTime % 60);
+        $('.currentMinute').text(ctMin < 10 ? '0' + ctMin : ctMin);
+        $('.currentSecond').text(ctSec < 10 ? '0' + ctSec : ctSec);
+        bofang();
+    }
+    // 拖拽播放进度条
+    $('.playRange').mousedown(function (e) {
+        let x = e.offsetX;
+        // console.log(x);
+        movej(x);
+        //进度条鼠标移动事件
+        $('.playRange')[0].onmousemove = function (e) {
+            let xx = e.offsetX;
+            $('.currentRange').css('width', xx);
+            $('.playBtn').css('left', xx - $('.playBtn').width() / 2);
+            let cikeTime = xx / $(this).width() * audio.duration;
+            audio.currentTime = cikeTime;
+        }
+    })
+
+    //进度条点击事件里的函数
+    function movej(x) {
+        $('.currentRange').css('width', x);
+        $('.playBtn').css('left', x - 10);
+        audio.play();
+        $('.playOrPause').find('use').attr('xlink:href', '#icon-weibiaoti--');//图标转换
+        let curretime = x / $('.playRange').width() * audio.duration;
+        audio.currentTime = curretime;
+
+    }
+
+    //播放时间进度条
+    function bofang() {
+        let sum = $('.playRange').width();
+        let movex = audio.currentTime / audio.duration * sum;
+        $('.currentRange').css('width', parseInt(movex));
+        $('.playBtn').css('left', parseInt(movex) - $('.playBtn').width() / 2);
+    }
+
+    //点击喇叭的时候
+    $('.volume svg').click(function () {
+        if ($(this).find('use').attr('xlink:href') == '#icon-shengyin') {
+            audio.muted = true;
+            $(this).find('use').attr('xlink:href', '#icon-shengyinjingyin');
+            $('.currentVolume').css('height', 0);
+            $('.volumeBtn').css('bottom', 0)
+        } else {
+            audio.muted = false;
+            $(this).find('use').attr('xlink:href', '#icon-shengyin');
+            $('.currentVolume').css('height', 50);
+            $('.volumeBtn').css('bottom', 43)
+            audio.volume = 0.5;
+        }
+    })
+    //调试声音
+    $('.volumeRange').mousedown(function (e) {
+        soundMove(e);
+        $('.volumeRange')[0].onmousemove = function (e) {
+            soundMove(e);
+        }
+    })
+    //声音移动函数
+    function soundMove(e) {
+        let y = 100 - e.offsetY;
+        // console.log(y);
+        $('.currentVolume').css('height', y);
+        $('.volumeBtn').css('bottom', y - 7)
+        audio.volume = y / $('.volumeRange').height();
+    }
+    //页面鼠标松开事件 结束声音解绑事件
+    $(document).mouseup(function () {
+        $('.playRange')[0].onmousemove = null;
+        $('.volumeRange')[0].onmousemove = null;
+    })
+/* 
+        //播放进度条
+        audio.onplay = function(){
+            console.log(66);
+        } */
+
+
+
+</script>
