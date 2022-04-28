@@ -66,23 +66,25 @@
         }
 
         .media .volumeRange {
-            width: 6px;
+            width: 4px;
             height: 100px;
             background-color: #333;
             border-radius: 2px;
             position: absolute;
+            padding-right: 3px;
             top: -100px;
-            left: 4px;
+            left: 3px;
             display: none;
+            cursor: pointer;
         }
 
         .media .volumeRange .currentVolume {
-            width: 6px;
+            width: 8px;
             height: 50px;
             background-color: blue;
             border-radius: 2px;
             position: absolute;
-            left: 0;
+            left: 0px;
             bottom: 0;
             pointer-events: none;
             /* 鼠标点击事件穿透 */
@@ -94,7 +96,7 @@
             border-radius: 50%;
             background-color: blue;
             position: absolute;
-            left: -5px;
+            left: -4px;
             bottom: 40px;
             pointer-events: none;
             /* 鼠标点击事件穿透 */
@@ -153,6 +155,7 @@
 <script src="./iconfont/font_s0j87378pz/iconfont.js"></script>
 <script src="./js/jquery.js"></script>
 <script>
+    let vol = 0;//记录时间(就是每次点击静音，然后又开启)
     /* 音乐播放器jq对象集合 */
     let audio = $('audio')[0];
     /* 声音控制的进度条show() 和 hide() */
@@ -231,15 +234,16 @@
         } else {
             audio.muted = false;
             $(this).find('use').attr('xlink:href', '#icon-shengyin');
-            $('.currentVolume').css('height', 50);
-            $('.volumeBtn').css('bottom', 43)
-            audio.volume = 0.5;
+            //vol * $('.volumeRange').height() vol当前声音/总声音1 * 总高度 得到高亮的高度
+            $('.currentVolume').css('height', vol * $('.volumeRange').height());
+            $('.volumeBtn').css('bottom', vol * $('.volumeRange').height() - 7);
+            audio.volume = vol;
         }
     })
     //调试声音
     $('.volumeRange').mousedown(function (e) {
         soundMove(e);
-        $('.volumeRange')[0].onmousemove = function (e) {
+        $('.volumeRange')[0].onmousemove = function (e) { //jq对象集合也可以通过off('事件对象')方法解绑
             soundMove(e);
         }
     })
@@ -253,7 +257,13 @@
     }
     //页面鼠标松开事件 结束声音解绑事件
     $(document).mouseup(function () {
+        vol = audio.volume;
         $('.playRange')[0].onmousemove = null;
         $('.volumeRange')[0].onmousemove = null;
     })
+    //解除默认选中事件
+    $('.media')[0].onselectstart = function(e){
+        // e.preventDefault();
+        return false;
+    }
 </script>
